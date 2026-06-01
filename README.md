@@ -5,7 +5,7 @@
 ## ⚙️ Требования
 
 - Python 3.10+;
-- NVIDIA GPU и драйвер с поддержкой CUDA 13.0.
+- NVIDIA GPU и драйвер с поддержкой CUDA.
 
 `requirements.txt` использует PyTorch wheels из индекса `https://download.pytorch.org/whl/cu130`. Если нужна другая версия CUDA, замените индекс на подходящий из PyTorch.
 
@@ -14,7 +14,7 @@
 1. Клонируйте репозиторий:
 
    ```bash
-   git clone https://github.com/fibit/yolo-trainer.git
+   git clone https://github.com/fibit/yolo-trainer
    cd yolo-trainer
    ```
 
