@@ -37,6 +37,42 @@
    pip install -r requirements.txt
    ```
 
+5. Настройте `ultralytics` для этого проекта (см. раздел [🧩 Настройка Ultralytics](#-настройка-ultralytics)).
+
+## 🧩 Настройка Ultralytics
+
+При первом запуске `ultralytics` создаёт файл `settings.json` в пользовательской директории (`~/.config/Ultralytics/` на Linux, `~/Library/Application Support/Ultralytics/` на macOS, `%APPDATA%\Ultralytics\` на Windows) и фиксирует в нём **абсолютные** пути `datasets_dir`, `weights_dir` и `runs_dir` проекта, в котором произошёл первый запуск. Если проектов несколько, веса моделей и результаты обучения будут попадать в папки того проекта, который настроил `ultralytics` первым.
+
+Чтобы изолировать настройки внутри проекта, выполните один раз из корня проекта после клонирования.
+
+Linux/macOS:
+
+```bash
+mkdir -p .config
+export YOLO_CONFIG_DIR=.config
+yolo settings datasets_dir=datasets weights_dir=weights runs_dir=runs
+```
+
+Windows (PowerShell):
+
+```powershell
+mkdir .config -Force
+$env:YOLO_CONFIG_DIR = ".config"
+yolo settings datasets_dir=datasets weights_dir=weights runs_dir=runs
+```
+
+Это даёт следующее:
+
+- `settings.json` хранится в `.config/Ultralytics/` внутри проекта, а глобальные настройки пользовательской директории не используются;
+- `datasets_dir`, `weights_dir` и `runs_dir` заданы относительными путями, поэтому при запуске команд из корня проекта предобученные веса скачиваются в `weights/`, а результаты обучения, валидации и предсказаний сохраняются в `runs/` этого проекта.
+
+Переменная `YOLO_CONFIG_DIR` действует в пределах текущей сессии терминала. В новом терминале задайте её заново:
+
+- Linux/macOS: `export YOLO_CONFIG_DIR=.config`
+- Windows (PowerShell): `$env:YOLO_CONFIG_DIR = ".config"`
+
+Все команды ниже выполняются из корня проекта с заданной `YOLO_CONFIG_DIR`.
+
 ## 📁 Структура
 
 ```text
@@ -54,6 +90,7 @@
 │           ├── images/
 │           └── labels/
 ├── runs/
+├── weights/
 ├── dataset.py
 ├── requirements.txt
 └── README.md
@@ -94,19 +131,19 @@ python dataset.py DatasetName
 
 ## 🚀 Обучение
 
-Запустите обучение из корня проекта после активации виртуального окружения и установки зависимостей:
+Запустите обучение из корня проекта после активации виртуального окружения и настройки Ultralytics:
 
 ```bash
-yolo task=detect mode=train model=yolo26n.pt data=./datasets/DatasetName/data.yaml epochs=100 imgsz=320 batch=32 degrees=180 scale=0.5 mosaic=1.0 flipud=0.5 fliplr=0.5 hsv_h=0.015 hsv_s=0.7 hsv_v=0.4 name=DatasetName
+yolo task=detect mode=train model=weights/yolo26n.pt data=./datasets/DatasetName/data.yaml epochs=100 imgsz=320 batch=32 degrees=180 scale=0.5 mosaic=1.0 flipud=0.5 fliplr=0.5 hsv_h=0.015 hsv_s=0.7 hsv_v=0.4 name=DatasetName
 ```
 
-Замените `DatasetName` на имя папки датасета в `datasets/`, а `model=yolo26n.pt` - на нужную модель или путь к весам.
+Замените `DatasetName` на имя папки датасета в `datasets/`, а `model=weights/yolo26n.pt` - на нужную модель или путь к весам. Если указанного файла весов нет, он будет автоматически скачан в `weights/` проекта.
 
 Основные параметры:
 
 - `task=detect` - задача детекции объектов;
 - `mode=train` - режим обучения;
-- `model=yolo26n.pt` - стартовые веса модели;
+- `model=weights/yolo26n.pt` - стартовые веса модели (скачиваются в `weights/` проекта);
 - `data=.../data.yaml` - конфигурация датасета;
 - `epochs=100` - количество эпох;
 - `imgsz=320` - размер входного изображения;

@@ -1,8 +1,12 @@
 __pycache__/
 .venv/
+.config/
 
 datasets/*
 !datasets/.gitkeep
+
+weights/*
+!weights/.gitkeep
 
 runs/*
 !runs/.gitkeep
